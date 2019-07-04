@@ -1,0 +1,16 @@
+plugins:
+  discord_bot_enabled:
+    default: true
+    client: false
+  discord_bot_token:
+    default: ''
+    client: false
+  discord_bot_admin_channel_id:
+    default: ''
+    client: false
+  discord_bot_role_id:
+    default: ''
+    client: false
+  discord_bot_rate_limite_delay:
+    default: 2
+    client: false

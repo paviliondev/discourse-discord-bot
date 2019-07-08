@@ -3,4 +3,5 @@ en:
       discord_bot_enabled: "Enable the Discourse Discord bot plugin"
       discord_bot_token: "Enter your bot token from Discord here"
       discord_bot_admin_channel_id: "The id of your admin text channel on Discord"
+      discord_bot_admin_role_id: "The id of your admin role on Discord for which commands are permitted"
       discord_bot_rate_limit_delay: "The delay in seconds between sending commands to Discord so we don't annihilate rate limits"

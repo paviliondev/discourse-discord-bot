@@ -38,7 +38,7 @@ after_initialize do
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse
 
-    bot.command(:disckick, min_trust_level_args: 3, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, min_trust_level|
+    bot.command(:disckick, min_trust_level_args: 3, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, min_trust_level|
       discordusers = []
 
       event.respond "Discourse Kick:  Starting.  Please be patient, I'm rate limited to respect Discord services."
@@ -72,10 +72,10 @@ after_initialize do
           user_id = user[:provider_uid]
           event.server.kick(user_id.to_s, "Kicked for not having sufficient trust level on the linked Discourse site")
           event.respond "<@#{user_id.to_s}> has been kicked for having insufficient trust level on the linked Discourse site"
-          sleep(SiteSetting.discord_rate_limit_delay)
+          sleep(SiteSetting.discord_bot_rate_limit_delay)
           rescue => e
             event.respond 'The user you are trying to kick has a role higher than/equal to me.'
-            bot.send_message(SiteSetting.discord_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^kick`, `#{e}`")
+            bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^kick`, `#{e}`")
         end
       else
         event.respond 'Sorry, but I do not have the "Kick Members" permission'
@@ -86,7 +86,7 @@ after_initialize do
 
     # '!discsync' - a command to pull all the groups that Discord using members are a member of and set them up on Discord inc. adding those Roles to users accordingly
 
-    bot.command(:discsync, clean_house_args: false, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house|
+    bot.command(:discsync, clean_house_args: false, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house|
       discord_users = []
       discourse_groups = []
       discord_roles =[]
@@ -140,10 +140,10 @@ after_initialize do
             role_id = discord_roles.detect{|r| r[:name] == g[:discourse_name] }[:id]
             event.server.role(role_id).delete("Discourse Sync Cleanup")
             event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' deleted as part of cleanup"
-            sleep(SiteSetting.discord_rate_limit_delay)
+            sleep(SiteSetting.discord_bot_rate_limit_delay)
             rescue => e
               event.respond 'Discourse Sync:  I dont appear to have rights to do this though!'
-              bot.send_message(SiteSetting.discord_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role deletion`, `#{e}`")
+              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role deletion`, `#{e}`")
           end
         end
       end
@@ -167,13 +167,13 @@ after_initialize do
           event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' created!"
         rescue => e
           event.respond 'Discourse Sync:  I dont appear to have rights to create Roles!'
-          bot.send_message(SiteSetting.discord_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
+          bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
         end
         else
           event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' already exists!"
         end
 
-        sleep(SiteSetting.discord_rate_limit_delay)
+        sleep(SiteSetting.discord_bot_rate_limit_delay)
       end
 
       discord_roles = []
@@ -204,10 +204,10 @@ after_initialize do
       ug_list.each do |ug|
         event.respond "Discourse Sync:  Adding member '#{ug[:discourse_username]}' to '#{ug[:discourse_group_name]}'"
         event.server.member(ug[:discord_uid]).add_role(ug[:discord_group_id])
-        sleep(SiteSetting.discord_rate_limit_delay)
+        sleep(SiteSetting.discord_bot_rate_limit_delay)
         rescue => e
           event.respond 'Discourse Sync:  I dont appear to have rights to do this though!'
-          bot.send_message(SiteSetting.discord_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^add_role`, `#{e}`")
+          bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^add_role`, `#{e}`")
       end
 
       event.respond "Discourse Sync:  DONE!"
@@ -218,7 +218,7 @@ after_initialize do
       event.respond 'Pong!'
     end
 
-    bot.send_message(SiteSetting.discord_admin_channel_id, "The Discourse admin bot has started his shift!")
+    bot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
 
     bot.run
 

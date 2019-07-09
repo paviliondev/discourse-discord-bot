@@ -68,17 +68,24 @@ after_initialize do
       can_do_the_magic_dance = bot_profile.permission?(:kick_members)
 
       if can_do_the_magic_dance == true
-        untrusted_users.each do |user|
-          user_id = user[:provider_uid]
-          event.server.kick(user_id.to_s, "Kicked for not having sufficient trust level on the linked Discourse site")
-          event.respond "<@#{user_id.to_s}> has been kicked for having insufficient trust level on the linked Discourse site"
-          sleep(SiteSetting.discord_bot_rate_limit_delay)
-          rescue => e
-            event.respond 'The user you are trying to kick has a role higher than/equal to me.'
-            bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^kick`, `#{e}`")
+
+        ut_count = untrusted_users.count
+
+        if ut_count > 0
+          untrusted_users.each_with_index do |user, index|
+            user_id = user[:provider_uid]
+            event.server.kick(user_id.to_s, "Kicked for not having sufficient trust level on the linked Discourse site")
+            event.respond "Discourse Kick:  [#{index + 1}/#{ut_count}] <@#{user_id.to_s}> has been kicked for having insufficient trust level on the linked Discourse site"
+            sleep(SiteSetting.discord_bot_rate_limit_delay)
+            rescue => e
+              event.respond 'Discourse Kick:  The user you are trying to kick has a role higher than/equal to me.'
+              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^kick`, `#{e}`")
+          end
+        else
+          event.respond 'Discourse Kick:  Great news!  There were no users below the specified or default trust level!'
         end
       else
-        event.respond 'Sorry, but I do not have the "Kick Members" permission'
+        event.respond 'Discourse Kick:  Sorry, but I do not have the "Kick Members" permission'
       end
 
       event.respond "Discourse Kick:  I'm done with the dirty work!"
@@ -275,6 +282,6 @@ after_initialize do
     end
 
     puts '---------------------------------------------------'
-    puts 'Bot should now be spawned, say "Ping!"" on Discord!'
+    puts 'Bot should now be spawned, say "Ping!" on Discord!'
     puts '---------------------------------------------------'
 end

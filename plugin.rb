@@ -86,131 +86,177 @@ after_initialize do
 
     # '!discsync' - a command to pull all the groups that Discord using members are a member of and set them up on Discord inc. adding those Roles to users accordingly
 
-    bot.command(:discsync, clean_house_args: false, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house|
+    bot.command(:discsync, clean_house_args: false, max_group_visibility_args: 0, include_automated_groups_args: false, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house, max_group_visibility, include_automated_groups|
       discord_users = []
+      eligible_discourse_groups = []
       discourse_groups = []
       discord_roles =[]
       ug_list = []
 
       event.respond "Discourse Sync:  Starting.  Please be patient, I'm rate limited to respect Discord services."
-      event.respond "Discourse Sync:  Preparing list of users who also have a registered account on Discord ..."
+      event.respond "Discourse Sync:  Checking if there are any eligible groups for sync ..."
 
-      builder = DB.build("select * from user_associated_accounts /*where*/")
-      builder.where("provider_name = :provider_name", provider_name: "discord")
-      builder.query.each do |t|
-        discord_users << {discourse_user_id: t.user_id, discord_uid: t.provider_uid}
-      end
+      eligiblegroupbuilder = DB.build("select id from groups /*where*/")
+      eligiblegroupbuilder.where("visibility_level <= :visibility", visibility: max_group_visibility.to_i)
+      unless include_automated_groups.to_s.downcase == "true" then eligiblegroupbuilder.where("automatic = false") end
 
-      event.respond "Discourse Sync:  Preparing list of groups that users who have a registered account on Discord belong to on Discourse ..."
+      event.respond "Discourse Sync: #{eligiblegroupbuilder.query.count} eligible group(s) were found"
 
-      discord_users.each do |user|
-        groupbuilder = DB.build("select group_id from group_users /*where*/")
-        groupbuilder.where("user_id = :user_id", user_id: user[:discourse_user_id])
-        groupbuilder.query.each do |g|
-          discourse_groups |= [discourse_group_id: g.group_id]
-          ug_entry = {discourse_user_id: user[:discourse_user_id], discord_uid: user[:discord_uid], discourse_group_id: g.group_id}
-          ug_list << ug_entry
+      unless eligiblegroupbuilder.query.count == 0
+
+        eligiblegroupbuilder.query.each do |g|
+          eligible_discourse_groups << g.id
         end
-        userbuilder = DB.build("select username from users /*where*/ limit 1")
-        userbuilder.where("id = :user_id", user_id: user[:discourse_user_id])
-        userbuilder.query.each do |un|
-          ug_list.each do |ug|
-            if ug[:discourse_user_id] == user[:discourse_user_id]
-              ug[:discourse_username] = un.username
+
+        event.respond "Discourse Sync:  Preparing list of users who also have a registered account on Discord ..."
+
+        builder = DB.build("select * from user_associated_accounts /*where*/")
+        builder.where("provider_name = :provider_name", provider_name: "discord")
+        builder.query.each do |t|
+          discord_users << {discourse_user_id: t.user_id, discord_uid: t.provider_uid}
+        end
+
+        event.respond "Discourse Sync:  Preparing list of groups that users who have a registered account on Discord belong to on Discourse ..."
+
+        discord_users.each do |user|
+          groupbuilder = DB.build("select group_id from group_users /*where*/")
+          groupbuilder.where("user_id = :user_id", user_id: user[:discourse_user_id])
+          groupbuilder.query.each do |g|
+            if eligible_discourse_groups.include? g.group_id
+              discourse_groups |= [discourse_group_id: g.group_id]
+              ug_entry = {discourse_user_id: user[:discourse_user_id], discord_uid: user[:discord_uid], discourse_group_id: g.group_id}
+              ug_list << ug_entry
+            end
+          end
+          userbuilder = DB.build("select username from users /*where*/ limit 1")
+          userbuilder.where("id = :user_id", user_id: user[:discourse_user_id])
+          userbuilder.query.each do |un|
+            ug_list.each do |ug|
+              if ug[:discourse_user_id] == user[:discourse_user_id]
+                ug[:discourse_username] = un.username
+              end
             end
           end
         end
-      end
 
-      event.respond "Discourse Sync:  Retrieving list of roles from Discord server ..."
+        event.respond "Discourse Sync: #{discourse_groups.length} eligible group(s) were found with Discord users"
 
-      event.server.roles.each do |r|
-        discord_roles << {name: r.name, id: r.id}
-      end
+        unless discourse_groups.length == 0
 
-      if clean_house
+          event.respond "Discourse Sync:  Retrieving list of roles from Discord server ..."
 
-        event.respond "Discourse Sync:  Deleting existing mapping roles ..."
+          event.server.roles.each do |r|
+            discord_roles << {name: r.name, id: r.id}
+          end
 
-        discourse_groups.each do |g|
-          builder = DB.build("select name from groups /*where*/ limit 1")
-          builder.where("id = :group_id", group_id: g[:discourse_group_id])
-          builder.query.each do |n|
-            g[:discourse_name] = n.name
-            role_id = discord_roles.detect{|r| r[:name] == g[:discourse_name] }[:id]
-            event.server.role(role_id).delete("Discourse Sync Cleanup")
-            event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' deleted as part of cleanup"
+          discourse_groups.each do |g|
+            builder = DB.build("select name from groups /*where*/ limit 1")
+            builder.where("id = :group_id", group_id: g[:discourse_group_id])
+            builder.query.each do |n|
+              g[:discourse_name] = n.name
+            end
+          end
+
+          if clean_house.to_s.downcase == "true"
+
+            event.respond "Discourse Sync:  Deleting existing mapping roles ..."
+
+            discourse_groups_count = discourse_groups.count
+
+            discourse_groups.each_with_index do |g, index|
+
+              event.respond "Discourse Sync:  [#{index + 1}/#{discourse_groups_count}] Attempting to delete Role"
+
+              if !discord_roles.detect{|r| r[:name] == g[:discourse_name] }.nil?
+                role_id = discord_roles.detect{|r| r[:name] == g[:discourse_name] }[:id]
+              else
+                role_id = nil
+              end
+
+              unless role_id.nil?
+                begin
+                  event.server.role(role_id).delete("Discourse Sync Cleanup")
+                  event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' deleted as part of cleanup"
+                  sleep(SiteSetting.discord_bot_rate_limit_delay)
+                rescue => e
+                  event.respond 'Discourse Sync:  I dont appear to have rights to do this though!'
+                  bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role deletion`, `#{e}`")
+                end
+              end
+            end
+          end
+
+          event.respond "Discourse Sync:  Creating missing Roles on Discord server ..."
+
+          discord_roles = []
+
+          event.server.roles.each do |r|
+            discord_roles << {name: r.name, id: r.id}
+          end
+
+          discourse_groups_count = discourse_groups.count
+
+          discourse_groups.each_with_index do |g, index|
+
+            event.respond "Discourse Sync:  [#{index + 1}/#{discourse_groups_count}] Attempting to create Role for #{g[:discourse_name]}"
+
+            if !discord_roles.any?{|hash| hash[:name] == g[:discourse_name]}
+            begin
+              event.server.create_role(name: g[:discourse_name])
+              event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' created!"
+            rescue => e
+              event.respond 'Discourse Sync:  I dont appear to have rights to create Roles!'
+              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
+            end
+            else
+              event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' already exists!"
+            end
+
+            sleep(SiteSetting.discord_bot_rate_limit_delay)
+          end
+
+          discord_roles = []
+
+          event.server.roles.each do |r|
+            discord_roles << {name: r.name, id: r.id}
+          end
+
+          event.respond "Discourse Sync:  Building user role mapping ..."
+
+          ug_list.each do |ug|
+            entrybuilder = DB.build("select name from groups /*where*/ limit 1")
+            entrybuilder.where("id = :group_id", group_id: ug[:discourse_group_id])
+
+            entrybuilder.query.each do |n|
+              ug[:discourse_group_name] = n.name
+            end
+
+            discord_roles.each do |dr|
+              if dr[:name] == ug[:discourse_group_name]
+                ug[:discord_group_id] = dr[:id]
+              end
+            end
+          end
+
+          event.respond "Discourse Sync:  Adding users to roles ..."
+
+          ug_count = ug_list.count
+          ug_list.each_with_index do |ug, index|
+            event.respond "Discourse Sync:  [#{index + 1}/#{ug_count}] Adding member '#{ug[:discourse_username]}' to '#{ug[:discourse_group_name]}'"
+            event.server.member(ug[:discord_uid]).add_role(ug[:discord_group_id])
             sleep(SiteSetting.discord_bot_rate_limit_delay)
             rescue => e
               event.respond 'Discourse Sync:  I dont appear to have rights to do this though!'
-              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role deletion`, `#{e}`")
+              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^add_role`, `#{e}`")
           end
-        end
-      end
 
-      event.respond "Discourse Sync:  Creating missing Roles on Discord server ..."
-
-      event.server.roles.each do |r|
-        discord_roles << {name: r.name, id: r.id}
-      end
-
-      discourse_groups.each do |g|
-        builder = DB.build("select name from groups /*where*/ limit 1")
-        builder.where("id = :group_id", group_id: g[:discourse_group_id])
-        builder.query.each do |n|
-          g[:discourse_name] = n.name
-        end
-
-        if !discord_roles.any?{|hash| hash[:name] == g[:discourse_name]}
-        begin
-          event.server.create_role(name: g[:discourse_name])
-          event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' created!"
-        rescue => e
-          event.respond 'Discourse Sync:  I dont appear to have rights to create Roles!'
-          bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
-        end
+          event.respond "Discourse Sync:  DONE!"
         else
-          event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' already exists!"
+          event.respond "Discourse Sync:  No users were found in elibigle groups for sync using provided or default criteria!"
         end
-
-        sleep(SiteSetting.discord_bot_rate_limit_delay)
+      else
+        event.respond "Discourse Sync:  No eligible groups for sync using provided or default criteria!"
       end
-
-      discord_roles = []
-
-      event.server.roles.each do |r|
-        discord_roles << {name: r.name, id: r.id}
-      end
-
-      event.respond "Discourse Sync:  Building user role mapping ..."
-
-      ug_list.each do |ug|
-        entrybuilder = DB.build("select name from groups /*where*/ limit 1")
-        entrybuilder.where("id = :group_id", group_id: ug[:discourse_group_id])
-
-        entrybuilder.query.each do |n|
-          ug[:discourse_group_name] = n.name
-        end
-
-        discord_roles.each do |dr|
-          if dr[:name] == ug[:discourse_group_name]
-            ug[:discord_group_id] = dr[:id]
-          end
-        end
-      end
-
-      event.respond "Discourse Sync:  Adding users to roles ..."
-
-      ug_list.each do |ug|
-        event.respond "Discourse Sync:  Adding member '#{ug[:discourse_username]}' to '#{ug[:discourse_group_name]}'"
-        event.server.member(ug[:discord_uid]).add_role(ug[:discord_group_id])
-        sleep(SiteSetting.discord_bot_rate_limit_delay)
-        rescue => e
-          event.respond 'Discourse Sync:  I dont appear to have rights to do this though!'
-          bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^add_role`, `#{e}`")
-      end
-
-      event.respond "Discourse Sync:  DONE!"
     end
 
 

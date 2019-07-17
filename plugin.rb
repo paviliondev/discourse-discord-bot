@@ -38,11 +38,14 @@ after_initialize do
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse
 
-    bot.command(:disckick, min_trust_level_args: 3, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, min_trust_level|
+    bot.command(:disckick, min_args: 0, max_args: 1, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, min_trust_level|
+
+      if !min_trust_level then min_trust_level = 3 end
+
       discordusers = []
 
+      event.respond "Discourse Kick:  Starting.  Minimum Trust Level = #{min_trust_level.to_s}"
       event.respond "Discourse Kick:  Starting.  Please be patient, I'm rate limited to respect Discord services."
-
       event.respond "Discourse Kick:  Preparing list of users who also have a registered account on Discord ..."
 
       builder = DB.build("select * from user_associated_accounts /*where*/")
@@ -93,7 +96,12 @@ after_initialize do
 
     # '!discsync' - a command to pull all the groups that Discord using members are a member of and set them up on Discord inc. adding those Roles to users accordingly
 
-    bot.command(:discsync, clean_house_args: false, max_group_visibility_args: 0, include_automated_groups_args: false, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house, max_group_visibility, include_automated_groups|
+    bot.command(:discsync, min_args: 0, max_args: 3, bucket: :admin_tasks, rate_limit_message: 'Hold on cow(girl/boy), rate limit hit!', required_roles: [SiteSetting.discord_bot_admin_role_id], description: 'Block users whose trust level is below a certain integer on discourse') do |event, clean_house, max_group_visibility, include_automated_groups|
+
+      if !clean_house then clean_house = false end
+      if !max_group_visibility then max_group_visibility = 0 end
+      if !include_automated_groups then include_automated_groups_args = false end
+
       discord_users = []
       eligible_discourse_groups = []
       discourse_groups = []
@@ -265,7 +273,6 @@ after_initialize do
         event.respond "Discourse Sync:  No eligible groups for sync using provided or default criteria!"
       end
     end
-
 
     bot.message(with_text: 'Ping!' ) do |event|
       event.respond 'Pong!'

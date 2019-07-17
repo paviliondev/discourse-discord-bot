@@ -285,10 +285,15 @@ after_initialize do
   end
 
     bot_thread = Thread.new do
-      run_bot
+      begin
+        run_bot
+      rescue Exception => ex
+        Rails.logger.error("Discord Bot: There was a problem: #{ex}")
+      end
     end
 
-    puts '---------------------------------------------------'
-    puts 'Bot should now be spawned, say "Ping!" on Discord!'
-    puts '---------------------------------------------------'
+    STDERR.puts '---------------------------------------------------'
+    STDERR.puts 'Bot should now be spawned, say "Ping!" on Discord!'
+    STDERR.puts '---------------------------------------------------'
+    STDERR.puts '(-------      If not check logs          ---------)'
 end

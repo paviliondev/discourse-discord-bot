@@ -34,6 +34,7 @@ after_initialize do
 
     bot.ready do |event|
       puts "Logged in as #{bot.profile.username} (ID:#{bot.profile.id}) | #{bot.servers.size} servers"
+      bot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
     end
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse
@@ -277,8 +278,6 @@ after_initialize do
     bot.message(with_text: 'Ping!' ) do |event|
       event.respond 'Pong!'
     end
-
-    bot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
 
     bot.run
 

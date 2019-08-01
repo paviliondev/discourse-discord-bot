@@ -29,11 +29,12 @@ register_asset 'stylesheets/common/discord.scss'
 after_initialize do
 
   def run_bot
-    bot = Discordrb::Commands::CommandBot.new token: SiteSetting.discord_bot_token, client_id: SiteSetting.discord_bot_client_id, prefix: '!'
+    bot = Discordrb::Commands::CommandBot.new token: SiteSetting.discord_bot_token, prefix: '!'
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
 
     bot.ready do |event|
       puts "Logged in as #{bot.profile.username} (ID:#{bot.profile.id}) | #{bot.servers.size} servers"
+      bot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
     end
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse
@@ -277,8 +278,6 @@ after_initialize do
     bot.message(with_text: 'Ping!' ) do |event|
       event.respond 'Pong!'
     end
-
-    bot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
 
     bot.run
 

@@ -29,7 +29,7 @@ register_asset 'stylesheets/common/discord.scss'
 after_initialize do
 
   def run_bot
-    bot = Discordrb::Commands::CommandBot.new token: SiteSetting.discord_bot_token, prefix: '!'
+    bot = Discordrb::Commands::CommandBot.new token: SiteSetting.discord_bot_token, client_id: SiteSetting.discord_bot_client_id, prefix: '!'
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
 
     bot.ready do |event|

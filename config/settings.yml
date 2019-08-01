@@ -5,6 +5,9 @@ plugins:
   discord_bot_token:
     default: ''
     client: false
+  discord_bot_client_id:
+    default: ''
+    client: false
   discord_bot_admin_channel_id:
     default: ''
     client: false

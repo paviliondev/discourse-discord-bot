@@ -1,5 +1,5 @@
-module BotCommands
-  def self.manage_commands(bot)
+module ::DiscordBot::BotCommands
+  def self.manage_discord_commands(bot)
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse

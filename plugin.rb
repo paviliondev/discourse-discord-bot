@@ -24,20 +24,20 @@ require 'discordrb'
 
 enabled_site_setting :discord_bot_enabled
 
-register_asset 'stylesheets/common/discord.scss'
-
 after_initialize do
 
   %w[
+    ../lib/engine.rb
     ../lib/bot.rb
     ../lib/bot_commands.rb
+    ../lib/discourse_events_handlers.rb
   ].each do |path|
     load File.expand_path(path, __FILE__)
   end
 
   bot_thread = Thread.new do
     begin
-      DiscordBot.run_bot
+      ::DiscordBot::Bot.run_bot
     rescue Exception => ex
       Rails.logger.error("Discord Bot: There was a problem: #{ex}")
     end

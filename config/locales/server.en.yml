@@ -1,7 +1,9 @@
 en:
   site_settings:
-      discord_bot_enabled: "Enable the Discourse Discord bot plugin"
-      discord_bot_token: "Enter your bot TOKEN from Discord here"
-      discord_bot_admin_channel_id: "The id of your admin text channel on Discord"
-      discord_bot_admin_role_id: "The id of your admin role on Discord for which commands are permitted"
-      discord_bot_rate_limit_delay: "The delay in seconds between sending commands to Discord so we don't annihilate rate limits"
+    discord_bot_enabled: "Enable the Discourse Discord bot plugin"
+    discord_bot_token: "Enter your bot TOKEN from Discord here"
+    discord_bot_admin_channel_id: "The id of your admin text channel on Discord"
+    discord_bot_admin_role_id: "The id of your admin role on Discord for which commands are permitted"
+    discord_bot_rate_limit_delay: "The delay in seconds between sending commands to Discord so we don't annihilate rate limits"
+    discord_bot_post_announcement_categories: "Announce new Posts in here within the admin channel"
+    discord_bot_topic_announcement_categories: "Announce new Topics in here within the admin channel"

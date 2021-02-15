@@ -1,5 +1,5 @@
 # Discord bot class
-class DiscordBot
+class ::DiscordBot::Bot
 
   @@DiscordBot = nil
 
@@ -22,7 +22,8 @@ class DiscordBot
     bot = self.init
 
     unless bot.nil?
-      BotCommands.manage_commands(bot)
+      ::DiscordBot::DiscourseEventsHandlers.hook_events
+      ::DiscordBot::BotCommands.manage_discord_commands(bot)
     end
   end
 end

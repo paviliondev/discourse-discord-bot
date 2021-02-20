@@ -8,11 +8,11 @@ module ::DiscordBot::DiscourseEventsHandlers
         posted_category_name = Category.find_by(id: posted_category).name
         if post_listening_categories.include?(posted_category.to_s) then
           message = "There's a new Post in the '#{posted_category_name}' Category on Discourse: #{Discourse.base_url + post.url}"
-          ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_admin_channel_id, message)
+          ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_announcement_channel_id, message)
         else
           if topic_listening_categories.include?(posted_category.to_s) && post.post_number = 1 then
             message = "There's a new Topic in the '#{posted_category_name}' Category on Discourse: #{Discourse.base_url + post.url}"
-            ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_admin_channel_id, message)
+            ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_announcement_channel_id, message)
           end
         end
       end

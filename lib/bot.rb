@@ -23,6 +23,8 @@ class ::DiscordBot::Bot
 
     unless bot.nil?
       ::DiscordBot::DiscourseEventsHandlers.hook_events
+      bot.include!(::DiscordBot::DiscordEventsHandlers::TransmitAnnouncement)
+     # ::DiscordBot::DiscordEventsHandlers.hook_events
       ::DiscordBot::BotCommands.manage_discord_commands(bot)
     end
   end

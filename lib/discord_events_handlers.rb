@@ -6,11 +6,10 @@ module ::DiscordBot::DiscordEventsHandlers
       # Copy the message to the assigned Discourse announcement Topic if assigned in plugin settings
       discourse_announcement_topic = Topic.find_by(id: SiteSetting.discord_bot_discourse_announcement_topic_id)
       unless discourse_announcement_topic.nil?
-        new_post = Post.new
-        new_post.user_id = -1
-        new_post.topic_id = discourse_announcement_topic.id
-        new_post.raw = event.message
-        new_post.save
+        system_user = User.find_by(id: -1)
+        raw = event.message.to_s
+        new_post = PostCreator.new(system_user, raw: raw, topic_id: discourse_announcement_topic.id)
+        new_post.create!
       end
     end
   end

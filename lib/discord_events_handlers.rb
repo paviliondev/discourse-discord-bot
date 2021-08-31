@@ -11,6 +11,14 @@ module ::DiscordBot::DiscordEventsHandlers
         new_post = PostCreator.new(system_user, raw: raw, topic_id: discourse_announcement_topic.id)
         new_post.create!
       end
+      if SiteSetting.discord_bot_auto_channel_sync
+        Category.find_each do |c|
+          if c.name == event.message.channel.name do 
+            raw = event.message.to_s
+            new_post = PostCreator.new(system_user, title: "New #{c.name} Chat"", raw: raw, category: c.id)
+          end
+        end
+      end
     end
   end
 end

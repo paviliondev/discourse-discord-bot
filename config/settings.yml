@@ -25,6 +25,9 @@ plugins:
     client: false
     default: ''
     type: category_list
+  discord_bot_auto_channel_sync:
+    default: false
+    client: false
   discord_bot_rate_limit_delay:
     default: 2
     client: false

@@ -14,13 +14,13 @@ en:
   discord_bot:
     discord_events:
       auto_message_copy:
-        default_topic_title: "Discord #%{channel_name} chats"
+        default_topic_title: "Discord #%{channel_name} messages"
     commands:
       rate_limit_breached: "Hold on cow(girl/boy/person), rate limit hit!"
       no_matching_category: "No matching Category in Discourse!"
       disccopy:
         description: "Copy across message history to Category of same name"
-        discourse_topic_title: "#%{channel} Chats from Discord"
+        discourse_topic_title: "#%{channel} messages from Discord"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category."
         success:
           found_matching_discourse_category: "SUCCESS: Found matching Discourse Category"

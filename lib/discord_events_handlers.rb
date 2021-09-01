@@ -12,10 +12,14 @@ module ::DiscordBot::DiscordEventsHandlers
         new_post.create!
       end
       if SiteSetting.discord_bot_auto_channel_sync
-        Category.find_each do |c|
-          if c.name == event.message.channel.name do 
-            raw = event.message.to_s
-            new_post = PostCreator.new(system_user, title: "New #{c.name} Chat"", raw: raw, category: c.id)
+        matching_category = Category.find_by(name: event.message.channel.name)
+        unless matching_category.nil?
+          raw = event.message.to_s
+          system_user = User.find_by(id: -1)
+          if !(target_topic = Topic.find_by(title: I18n.t("discord_bot.discord_events.auto_message_copy.default_topic_title", channel_name: matching_category.name))).nil?
+            new_post = PostCreator.create!(system_user, raw: raw, topic_id: target_topic.id, skip_validations: true)
+          else
+            new_post = PostCreator.create!(system_user, title: I18n.t("discord_bot.discord_events.auto_message_copy.default_topic_title", channel_name: matching_category.name), raw: raw, category: matching_category.id, skip_validations: true)
           end
         end
       end

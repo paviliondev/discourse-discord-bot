@@ -28,6 +28,9 @@ plugins:
   discord_bot_auto_channel_sync:
     default: false
     client: false
+  discord_bot_message_copy_topic_size_limit:
+    default: 100
+    client: false
   discord_bot_rate_limit_delay:
     default: 2
     client: false

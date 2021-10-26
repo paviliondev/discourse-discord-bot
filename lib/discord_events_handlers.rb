@@ -4,6 +4,8 @@ module ::DiscordBot::DiscordEventsHandlers
     extend Discordrb::EventContainer
     message do |event|
 
+      return if !SiteSetting.discord_bot_auto_channel_sync && SiteSetting.discord_bot_discourse_announcement_topic_id.blank? && (event.message.channel.id != SiteSetting.discord_bot_announcement_channel_id)
+
       system_user = User.find_by(id: -1)
 
       associated_user = UserAssociatedAccount.find_by(provider_uid: event.message.author.id)
@@ -26,15 +28,13 @@ module ::DiscordBot::DiscordEventsHandlers
             return
           end
         end
-        if_set_send_to_announcement_topic(posting_user, raw)
-      end
-    end
-
-    def if_set_send_to_announcement_topic(posting_user, raw)
-      # Copy the message to the assigned Discourse announcement Topic if assigned in plugin settings
-      discourse_announcement_topic = Topic.find_by(id: SiteSetting.discord_bot_discourse_announcement_topic_id)
-      unless discourse_announcement_topic.nil?
-        new_post = PostCreator.create!(posting_user, raw: raw, topic_id: discourse_announcement_topic.id)
+        if !SiteSetting.discord_bot_discourse_announcement_topic_id.blank? && (event.message.channel.id == SiteSetting.discord_bot_announcement_channel_id)
+          # Copy the message to the assigned Discourse announcement Topic if assigned in plugin settings
+          discourse_announcement_topic = Topic.find_by(id: SiteSetting.discord_bot_discourse_announcement_topic_id)
+          unless discourse_announcement_topic.nil?
+            new_post = PostCreator.create!(posting_user, raw: raw, topic_id: discourse_announcement_topic.id)
+          end
+        end
       end
     end
   end

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ::DiscordBot::BotCommands
   def self.manage_discord_commands(bot)
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
@@ -54,12 +55,12 @@ module ::DiscordBot::BotCommands
             end
             new_post = PostCreator.create!(posting_user, raw: raw, topic_id: current_topic_id, skip_validations: true)
             total_copied_messages += 1
-          else 
+          else
             event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_determine_topic_id")
           end
         end
       end
-      event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages) 
+      event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages)
     end
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse
@@ -77,7 +78,7 @@ module ::DiscordBot::BotCommands
       builder = DB.build("select * from user_associated_accounts /*where*/")
       builder.where("provider_name = :provider_name", provider_name: "discord")
       builder.query.each do |t|
-        discordusers << {discord_user_id: t.user_id, provider_uid: t.provider_uid}
+        discordusers << { discord_user_id: t.user_id, provider_uid: t.provider_uid }
       end
 
       event.respond "Discourse Kick:  Determining user trust levels ..."
@@ -90,7 +91,7 @@ module ::DiscordBot::BotCommands
       event.respond "Discourse Kick:  Compiling list of untrusted users ..."
 
       untrusted_users = discordusers.select do |user|
-          user[:trust_level].to_i < min_trust_level.to_i
+        user[:trust_level].to_i < min_trust_level.to_i
       end
 
       bot_profile = bot.profile.on(event.server)
@@ -131,7 +132,7 @@ module ::DiscordBot::BotCommands
       discord_users = []
       eligible_discourse_groups = []
       discourse_groups = []
-      discord_roles =[]
+      discord_roles = []
       ug_list = []
 
       event.respond "Discourse Sync:  Starting.  Please be patient, I'm rate limited to respect Discord services."
@@ -154,7 +155,7 @@ module ::DiscordBot::BotCommands
         builder = DB.build("select * from user_associated_accounts /*where*/")
         builder.where("provider_name = :provider_name", provider_name: "discord")
         builder.query.each do |t|
-          discord_users << {discourse_user_id: t.user_id, discord_uid: t.provider_uid}
+          discord_users << { discourse_user_id: t.user_id, discord_uid: t.provider_uid }
         end
 
         event.respond "Discourse Sync:  Preparing list of groups that users who have a registered account on Discord belong to on Discourse ..."
@@ -165,7 +166,7 @@ module ::DiscordBot::BotCommands
           groupbuilder.query.each do |g|
             if eligible_discourse_groups.include? g.group_id
               discourse_groups |= [discourse_group_id: g.group_id]
-              ug_entry = {discourse_user_id: user[:discourse_user_id], discord_uid: user[:discord_uid], discourse_group_id: g.group_id}
+              ug_entry = { discourse_user_id: user[:discourse_user_id], discord_uid: user[:discord_uid], discourse_group_id: g.group_id }
               ug_list << ug_entry
             end
           end
@@ -187,7 +188,7 @@ module ::DiscordBot::BotCommands
           event.respond "Discourse Sync:  Retrieving list of roles from Discord server ..."
 
           event.server.roles.each do |r|
-            discord_roles << {name: r.name, id: r.id}
+            discord_roles << { name: r.name, id: r.id }
           end
 
           discourse_groups.each do |g|
@@ -208,8 +209,8 @@ module ::DiscordBot::BotCommands
 
               event.respond "Discourse Sync:  [#{index + 1}/#{discourse_groups_count}] Attempting to delete Role"
 
-              if !discord_roles.detect{|r| r[:name] == g[:discourse_name] }.nil?
-                role_id = discord_roles.detect{|r| r[:name] == g[:discourse_name] }[:id]
+              if !discord_roles.detect { |r| r[:name] == g[:discourse_name] }.nil?
+                role_id = discord_roles.detect { |r| r[:name] == g[:discourse_name] }[:id]
               else
                 role_id = nil
               end
@@ -232,7 +233,7 @@ module ::DiscordBot::BotCommands
           discord_roles = []
 
           event.server.roles.each do |r|
-            discord_roles << {name: r.name, id: r.id}
+            discord_roles << { name: r.name, id: r.id }
           end
 
           discourse_groups_count = discourse_groups.count
@@ -241,14 +242,14 @@ module ::DiscordBot::BotCommands
 
             event.respond "Discourse Sync:  [#{index + 1}/#{discourse_groups_count}] Attempting to create Role for #{g[:discourse_name]}"
 
-            if !discord_roles.any?{|hash| hash[:name] == g[:discourse_name]}
-            begin
-              event.server.create_role(name: g[:discourse_name])
-              event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' created!"
-            rescue => e
-              event.respond 'Discourse Sync:  I dont appear to have rights to create Roles!'
-              bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
-            end
+            if !discord_roles.any? { |hash| hash[:name] == g[:discourse_name] }
+              begin
+                event.server.create_role(name: g[:discourse_name])
+                event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' created!"
+              rescue => e
+                event.respond 'Discourse Sync:  I dont appear to have rights to create Roles!'
+                bot.send_message(SiteSetting.discord_bot_admin_channel_id, "ERROR on server #{event.server.name} (ID: #{event.server.id}) for command `^role create`, `#{e}`")
+              end
             else
               event.respond "Discourse Sync:  Role '#{g[:discourse_name]}' already exists!"
             end
@@ -259,7 +260,7 @@ module ::DiscordBot::BotCommands
           discord_roles = []
 
           event.server.roles.each do |r|
-            discord_roles << {name: r.name, id: r.id}
+            discord_roles << { name: r.name, id: r.id }
           end
 
           event.respond "Discourse Sync:  Building user role mapping ..."
@@ -300,7 +301,7 @@ module ::DiscordBot::BotCommands
       end
     end
 
-    bot.message(with_text: 'Ping!' ) do |event|
+    bot.message(with_text: 'Ping!') do |event|
       event.respond 'Pong!'
     end
 

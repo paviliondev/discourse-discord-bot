@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Discord bot class
 class ::DiscordBot::Bot
 

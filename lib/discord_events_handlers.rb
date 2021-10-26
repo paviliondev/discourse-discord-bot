@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ::DiscordBot::DiscordEventsHandlers
   # Copy message to Discourse
   module TransmitAnnouncement

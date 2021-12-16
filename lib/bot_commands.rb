@@ -1,11 +1,28 @@
 module ::DiscordBot::BotCommands
+
+  HISTORY_CHUNK_LIMIT = 100
+
   def self.manage_discord_commands(bot)
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
 
     # '!disckick' - a command to copy message history to Topics in Discourse
 
     bot.command(:disccopy, min_args: 1, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
-      past_messages = event.channel.history(number_of_past_messages, event.message.id)
+      past_messages = []
+
+      if number_of_past_messages <= HISTORY_CHUNK_LIMIT
+        past_messages << event.channel.history(number_of_past_messages, event.message.id)
+      else
+        number_of_messages_retrieved = 0
+        last_id = event.message.id
+        while number_of_messages_retrieved < number_of_past_messages
+          retrieve_this_time = number_of_past_messages - number_of_messages_retrieved > HISTORY_CHUNK_LIMIT ? HISTORY_CHUNK_LIMIT : number_of_past_messages - number_of_messages_retrieved
+          past_messages << event.channel.history(retrieve_this_time, last_id)
+          last_id = past_messages.last.id
+          number_of_messages_retrieved += retrieve_this_time
+        end
+      end
+
       destination_topic = nil
       if target_category.nil?
         destination_category = Category.find_by(name: event.message.channel.name)

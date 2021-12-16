@@ -10,16 +10,16 @@ module ::DiscordBot::BotCommands
 
     bot.command(:disccopy, min_args: 1, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
       past_messages = []
-
-      if number_of_past_messages <= HISTORY_CHUNK_LIMIT
-        past_messages << event.channel.history(number_of_past_messages, event.message.id)
+      if number_of_past_messages.to_i <= HISTORY_CHUNK_LIMIT
+        past_messages += event.channel.history(number_of_past_messages.to_i, event.message.id)
+        pp past_messages
       else
         number_of_messages_retrieved = 0
         last_id = event.message.id
-        while number_of_messages_retrieved < number_of_past_messages
-          retrieve_this_time = number_of_past_messages - number_of_messages_retrieved > HISTORY_CHUNK_LIMIT ? HISTORY_CHUNK_LIMIT : number_of_past_messages - number_of_messages_retrieved
-          past_messages << event.channel.history(retrieve_this_time, last_id)
-          last_id = past_messages.last.id
+        while number_of_messages_retrieved < number_of_past_messages.to_i
+          retrieve_this_time = number_of_past_messages.to_i - number_of_messages_retrieved > HISTORY_CHUNK_LIMIT ? HISTORY_CHUNK_LIMIT : number_of_past_messages.to_i - number_of_messages_retrieved
+          past_messages += event.channel.history(retrieve_this_time, last_id)
+          last_id = past_messages.last.id.to_i
           number_of_messages_retrieved += retrieve_this_time
         end
       end

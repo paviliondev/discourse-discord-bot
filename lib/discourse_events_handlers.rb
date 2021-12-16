@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ::DiscordBot::DiscourseEventsHandlers
   def self.hook_events
     DiscourseEvent.on(:post_created) do |post|

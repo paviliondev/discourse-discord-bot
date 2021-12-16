@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # name: discord bot
 # about: Integrate Discord Bots with Discourse
 # version: 0.21
@@ -12,11 +13,11 @@ gem 'netrc', '0.11.0'
 gem 'mime-types-data', '3.2019.1009'
 gem 'mime-types', '3.3.1'
 gem 'domain_name', '0.5.20180417'
-gem 'http-cookie','1.0.3'
+gem 'http-cookie', '1.0.3'
 gem 'http-accept', '1.7.0', { require: false }
 gem 'rest-client', '2.1.0.rc1'
 
-gem 'discordrb-webhooks', '3.3.0', {require: false}
+gem 'discordrb-webhooks', '3.3.0', { require: false }
 gem 'discordrb', '3.4.0'
 
 require 'discordrb'

@@ -29,11 +29,11 @@ module ::DiscordBot::DiscordEventsHandlers
             return
           end
         end
-        if !SiteSetting.discord_bot_discourse_announcement_topic_id.blank? && (event.message.channel.id == SiteSetting.discord_bot_announcement_channel_id)
+        if !SiteSetting.discord_bot_discourse_announcement_topic_id.blank? && (event.message.channel.id == SiteSetting.discord_bot_announcement_channel_id.to_i)
           # Copy the message to the assigned Discourse announcement Topic if assigned in plugin settings
-          discourse_announcement_topic = Topic.find_by(id: SiteSetting.discord_bot_discourse_announcement_topic_id)
+          discourse_announcement_topic = Topic.find_by(id: SiteSetting.discord_bot_discourse_announcement_topic_id.to_i)
           unless discourse_announcement_topic.nil?
-            new_post = PostCreator.create!(posting_user, raw: raw, topic_id: discourse_announcement_topic.id)
+            new_post = PostCreator.create!(posting_user, raw: raw, topic_id: discourse_announcement_topic.id, skip_validations: true)
           end
         end
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # name: discord bot
 # about: Integrate Discord Bots with Discourse
-# version: 0.21
+# version: 0.3
 # authors: Robert Barrow
 # url: https://github.com/merefield/discourse-discord-bot
 

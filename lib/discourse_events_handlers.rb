@@ -2,7 +2,7 @@
 module ::DiscordBot::DiscourseEventsHandlers
   def self.hook_events
     DiscourseEvent.on(:post_created) do |post|
-      if post.id > 0 && !::DiscordBot::Bot.discord_bot.nil? then
+      if post.id > 0 && post.topic.archetype != 'private_message' && !::DiscordBot::Bot.discord_bot.nil? then
         post_listening_categories = SiteSetting.discord_bot_post_announcement_categories.split('|')
         topic_listening_categories = SiteSetting.discord_bot_topic_announcement_categories.split('|')
         posted_category = post.topic.category.id

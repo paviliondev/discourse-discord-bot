@@ -30,5 +30,7 @@ en:
           unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!"
           unable_to_find_discourse_topic: "ERROR: Unable to find matching Discourse Topic in target Category, will create new!"
           unable_to_determine_topic_id: "ERROR: Unable to determine a suitable Topic Id for Discourse!"
+      disccopythread:
+        description: "Copy this thread to a new Topic on Discourse"
       disckick:
         description: "Block users whose trust level is below a certain integer on discourse"

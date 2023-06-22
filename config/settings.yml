@@ -31,6 +31,14 @@ plugins:
   discord_bot_message_copy_topic_size_limit:
     default: 100
     client: false
+  discord_bot_message_copy_default_category:
+    client: false
+    default: ''
+    type: category_list
+  discord_bot_unknown_user_proxy_account:
+    client: false
+    type: username
+    default: system
   discord_bot_rate_limit_delay:
     default: 2
     client: false

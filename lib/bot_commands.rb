@@ -8,11 +8,11 @@ module ::DiscordBot::BotCommands
 
     # '!disccopy' - a command to copy message history to Topics in Discourse
 
-    bot.command(:disccopy, min_args: 1, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
+    bot.command(:disccopy, min_args: 0, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
       past_messages = []
+      number_of_past_messages = number_of_past_messages || HISTORY_CHUNK_LIMIT
       if number_of_past_messages.to_i <= HISTORY_CHUNK_LIMIT
         past_messages += event.channel.history(number_of_past_messages.to_i, event.message.id)
-        pp past_messages
       else
         number_of_messages_retrieved = 0
         last_id = event.message.id
@@ -26,7 +26,7 @@ module ::DiscordBot::BotCommands
 
       destination_topic = nil
       if target_category.nil?
-        destination_category = Category.find_by(name: event.message.channel.name)
+        destination_category = Category.find_by(name: event.message.channel.name) ||  Category.find_by(id: SiteSetting.discord_bot_message_copy_default_category)
         event.respond I18n.t("discord_bot.commands.disccopy.no_category_specified")
       else
         destination_category = Category.find_by(name: target_category)
@@ -45,7 +45,7 @@ module ::DiscordBot::BotCommands
           event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_find_discourse_topic")
         end
       end
-      system_user = User.find_by(id: -1)
+      system_user = User.find_by(username: SiteSetting.discord_bot_unknown_user_proxy_account) || User.find_by(id: -1)
 
       total_copied_messages = 0
 
@@ -63,6 +63,7 @@ module ::DiscordBot::BotCommands
           end
 
           if topic_index == 0 && destination_topic.nil?
+            raw = raw.blank? ?  I18n.t("discord_bot.commands.disccopy.discourse_topic_contents", channel: event.channel.name) : raw
             new_post = PostCreator.create!(posting_user, title: I18n.t("discord_bot.commands.disccopy.discourse_topic_title", channel: event.channel.name) + (past_messages.count <= SiteSetting.discord_bot_message_copy_topic_size_limit ? "" : " #{index + 1}") , raw: raw, category: destination_category.id, skip_validations: true)
             total_copied_messages += 1
             current_topic_id = new_post.topic.id
@@ -78,81 +79,6 @@ module ::DiscordBot::BotCommands
         end
       end
       event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages)
-    end
-
-    # '!disccopythread' - a command to copy current Discord Thread to a New Topic in Discourse
-
-    bot.command(:disccopythread, min_args: 0, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopythread.description")) do |event, target_topic, target_category|
-      past_messages = []
-      pp event
-      # if number_of_past_messages.to_i <= HISTORY_CHUNK_LIMIT
-      #   past_messages += event.channel.history(number_of_past_messages.to_i, event.message.id)
-      #   pp past_messages
-      # else
-      #   number_of_messages_retrieved = 0
-      #   last_id = event.message.id
-      #   while number_of_messages_retrieved < number_of_past_messages.to_i
-      #     retrieve_this_time = number_of_past_messages.to_i - number_of_messages_retrieved > HISTORY_CHUNK_LIMIT ? HISTORY_CHUNK_LIMIT : number_of_past_messages.to_i - number_of_messages_retrieved
-      #     past_messages += event.channel.history(retrieve_this_time, last_id)
-      #     last_id = past_messages.last.id.to_i
-      #     number_of_messages_retrieved += retrieve_this_time
-      #   end
-      # end
-
-      # destination_topic = nil
-      # if target_category.nil?
-      #   destination_category = Category.find_by(name: event.message.channel.name)
-      #   event.respond I18n.t("discord_bot.commands.disccopy.no_category_specified")
-      # else
-      #   destination_category = Category.find_by(name: target_category)
-      # end
-      # if destination_category
-      #   event.respond I18n.t("discord_bot.commands.disccopy.success.found_matching_discourse_category")
-      # else
-      #   event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_find_discourse_category")
-      #   break
-      # end
-      # unless target_topic.nil?
-      #   destination_topic = Topic.find_by(title: target_topic, category_id: destination_category.id)
-      #   if destination_topic
-      #     event.respond I18n.t("discord_bot.commands.disccopy.success.found_matching_discourse_topic")
-      #   else
-      #     event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_find_discourse_topic")
-      #   end
-      # end
-      # system_user = User.find_by(id: -1)
-
-      # total_copied_messages = 0
-
-      # past_messages.reverse.in_groups_of(SiteSetting.discord_bot_message_copy_topic_size_limit.to_i).each_with_index do |message_batch, index|
-      #   current_topic_id = nil
-      #   message_batch.each_with_index do |pm, topic_index|
-      #     next if pm.nil?
-      #     raw = pm.to_s
-
-      #     associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id)
-      #     unless associated_user.nil?
-      #       posting_user = User.find_by(id: associated_user.user_id)
-      #     else
-      #       posting_user = system_user
-      #     end
-
-      #     if topic_index == 0 && destination_topic.nil?
-      #       new_post = PostCreator.create!(posting_user, title: I18n.t("discord_bot.commands.disccopy.discourse_topic_title", channel: event.channel.name) + (past_messages.count <= SiteSetting.discord_bot_message_copy_topic_size_limit ? "" : " #{index + 1}") , raw: raw, category: destination_category.id, skip_validations: true)
-      #       total_copied_messages += 1
-      #       current_topic_id = new_post.topic.id
-      #     elsif !destination_topic.nil? || !current_topic_id.nil?
-      #       if current_topic_id.nil?
-      #         current_topic_id = destination_topic.id
-      #       end
-      #       new_post = PostCreator.create!(posting_user, raw: raw, topic_id: current_topic_id, skip_validations: true)
-      #       total_copied_messages += 1
-      #     else
-      #       event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_determine_topic_id")
-      #     end
-      #   end
-      # end
-      # event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages)
     end
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse

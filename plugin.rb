@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# name: discord bot
+# name: discourse-discord-bot
 # about: Integrate Discord Bots with Discourse
 # version: 0.3
 # authors: Robert Barrow
@@ -8,9 +8,7 @@
 
 libdir = File.join(File.dirname(__FILE__), "vendor/discordrb/lib")
 
-pp $LOAD_PATH.count
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
-pp $LOAD_PATH.count
 
 gem 'event_emitter', '0.2.6'
 gem 'websocket', '1.2.9'

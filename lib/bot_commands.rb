@@ -29,15 +29,17 @@ module ::DiscordBot::BotCommands
         destination_category = Category.find_by(name: event.message.channel.name) ||  Category.find_by(id: SiteSetting.discord_bot_message_copy_default_category)
         event.respond I18n.t("discord_bot.commands.disccopy.no_category_specified")
       else
+        target_category = target_category.gsub /_/, ' '
         destination_category = Category.find_by(name: target_category)
       end
       if destination_category
-        event.respond I18n.t("discord_bot.commands.disccopy.success.found_matching_discourse_category")
+        event.respond I18n.t("discord_bot.commands.disccopy.success.found_matching_discourse_category", name: destination_category.name)
       else
         event.respond I18n.t("discord_bot.commands.disccopy.error.unable_to_find_discourse_category")
         break
       end
       unless target_topic.nil?
+        target_topic = target_topic.gsub /_/, ' '
         destination_topic = Topic.find_by(title: target_topic, category_id: destination_category.id)
         if destination_topic
           event.respond I18n.t("discord_bot.commands.disccopy.success.found_matching_discourse_topic")

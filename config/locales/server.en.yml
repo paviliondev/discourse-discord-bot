@@ -26,11 +26,11 @@ en:
         discourse_topic_contents: "%{channel}"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category or will use Default Category."
         success:
-          found_matching_discourse_category: "SUCCESS: Found matching Discourse Category"
+          found_matching_discourse_category: "SUCCESS: Found matching Discourse Category: \"%{name}\""
           found_matching_discourse_topic: "SUCCESS: Found matching Discourse Topic"
           final_outcome: "SUCCESS: Copied over %{count} past messages to Discourse!"
         error:
-          unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!"
+          unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!  Be sure to substitute _ for spaces in name."
           unable_to_find_discourse_topic: "ERROR: Unable to find matching Discourse Topic in target Category, will create new!"
           unable_to_determine_topic_id: "ERROR: Unable to determine a suitable Topic Id for Discourse!"
       disccopythread:

@@ -17,9 +17,16 @@ module ::DiscordBot::BotCommands
     bot.command(:disccopy, min_args: 0, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
       past_messages = []
 
-      if !THREAD_TYPES.include?(event.channel.type) && number_of_past_messages.nil?
-        event.respond I18n.t("discord_bot.commands.disccopy.error.must_specify_message_number")
-        break
+      if !THREAD_TYPES.include?(event.channel.type)
+        if !(number_of_past_messages.to_i > 0)
+          event.respond I18n.t("discord_bot.commands.disccopy.error.must_specify_message_number")
+          break
+        end
+      else
+        if !number_of_past_messages.blank? && !(number_of_past_messages.to_i > 0)
+          event.respond I18n.t("discord_bot.commands.disccopy.error.must_specify_message_number_as_integer")
+          break
+        end
       end
 
       number_of_past_messages = number_of_past_messages || HISTORY_CHUNK_LIMIT

@@ -3,6 +3,12 @@ module ::DiscordBot::BotCommands
 
   HISTORY_CHUNK_LIMIT = 100
 
+  THREAD_TYPES = [
+    Discordrb::Channel::TYPES[:news_thread],
+    Discordrb::Channel::TYPES[:public_thread],
+    Discordrb::Channel::TYPES[:private_thread]
+  ].freeze
+
   def self.manage_discord_commands(bot)
     bot.bucket :admin_tasks, limit: 3, time_span: 60, delay: 10
 
@@ -10,6 +16,12 @@ module ::DiscordBot::BotCommands
 
     bot.command(:disccopy, min_args: 0, max_args: 3, bucket: :admin_tasks, rate_limit_message: I18n.t("discord_bot.commands.rate_limit_breached"), required_roles: [SiteSetting.discord_bot_admin_role_id], description: I18n.t("disccopy.description")) do |event, number_of_past_messages, target_category, target_topic|
       past_messages = []
+
+      if !THREAD_TYPES.include?(event.channel.type) && number_of_past_messages.nil?
+        event.respond I18n.t("discord_bot.commands.disccopy.error.must_specify_message_number")
+        break
+      end
+
       number_of_past_messages = number_of_past_messages || HISTORY_CHUNK_LIMIT
       if number_of_past_messages.to_i <= HISTORY_CHUNK_LIMIT
         past_messages += event.channel.history(number_of_past_messages.to_i, event.message.id)

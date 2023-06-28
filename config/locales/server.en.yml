@@ -30,7 +30,8 @@ en:
           found_matching_discourse_topic: "SUCCESS: Found matching Discourse Topic"
           final_outcome: "SUCCESS: Copied over %{count} past messages to Discourse!"
         error:
-          unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!  Be sure to substitute _ for spaces in name."
+          must_specify_message_number: "ERROR: In outside of a Thread you must specify number of messages to be copied!"
+          unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!  Be sure to substitute _ for spaces in name and match case."
           unable_to_find_discourse_topic: "ERROR: Unable to find matching Discourse Topic in target Category, will create new!"
           unable_to_determine_topic_id: "ERROR: Unable to determine a suitable Topic Id for Discourse!"
       disccopythread:

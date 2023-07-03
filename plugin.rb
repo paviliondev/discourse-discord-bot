@@ -65,7 +65,7 @@ after_initialize do
   end
 
   DiscourseEvent.on(:site_setting_changed) do |name|
-    if name.start_with?("discord_")
+    if ["discord_bot_enabled", "discord_bot_token"].include? (name)
       db = RailsMultisite::ConnectionManagement.current_db
       if db_threads.has_key?(db)
         db_threads[db].kill

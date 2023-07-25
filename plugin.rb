@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # name: discourse-discord-bot
 # about: Integrate Discord Bots with Discourse
-# version: 0.3.4
+# version: 0.3.5
 # authors: Robert Barrow
 # url: https://github.com/merefield/discourse-discord-bot
 
@@ -22,11 +22,8 @@ gem 'http-cookie', '1.0.3'
 gem 'http-accept', '1.7.0', { require: false }
 gem 'rest-client', '2.1.0.rc1'
 
-# gem 'discordrb-webhooks', '3.3.0', { require: false }
-# gem 'discordrb', '3.4.1'
-# Disable whilst thread support is missing from released gem - main branch which does support it is presently in /vendor
-
-require_relative 'vendor/discordrb/lib/discordrb.rb'
+gem 'discordrb-webhooks', '3.5.0', { require: false }
+gem 'discordrb', '3.5.0'
 
 enabled_site_setting :discord_bot_enabled
 

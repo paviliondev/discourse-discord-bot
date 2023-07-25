@@ -1,0 +1,68 @@
+require:
+  - rubocop-performance
+  - rubocop-rake
+
+inherit_mode:
+  merge:
+    - AllowedNames
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.7
+
+# Disable line length checks
+Layout/LineLength:
+  Enabled: false
+
+# TODO: Larger refactor
+Lint/MissingSuper:
+  Enabled: false
+
+# Allow 'Pokémon-style' exception handling
+Lint/RescueException:
+  Enabled: false
+
+# Disable all metrics.
+Metrics:
+  Enabled: false
+
+# Allow some common and/or obvious short method params
+Naming/MethodParameterName:
+  AllowedNames:
+    - e
+
+# Ignore `eval` in the examples folder
+Security/Eval:
+  Exclude:
+    - examples/**/*
+
+# https://stackoverflow.com/q/4763121/
+Style/Alias:
+  Enabled: false
+
+# Had to disable this globally because it's being silently autocorrected even with local disable comments?
+Style/BisectedAttrAccessor:
+  Enabled: false
+
+# Prefer compact module/class defs
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# So RuboCop doesn't complain about application IDs
+Style/NumericLiterals:
+  Exclude:
+    - examples/**/*
+
+# TODO: Requires breaking changes
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+# Prefer explicit arguments in case global variables like `$;` or `$,` are changed
+Style/RedundantArgument:
+  Enabled: false
+
+# Prefer |m, e| for the `reduce` block arguments
+Style/SingleLineBlockParams:
+  Methods:
+    - reduce: [m, e]
+    - inject: [m, e]

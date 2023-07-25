@@ -1,0 +1,16 @@
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/profiles/
+/tmp/
+/.idea/
+.DS_Store
+*.gem
+**.sw*
+
+/vendor/bundle

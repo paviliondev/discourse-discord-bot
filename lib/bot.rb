@@ -7,9 +7,10 @@ class ::DiscordBot::Bot
   def self.init
     @@DiscordBot = Discordrb::Commands::CommandBot.new token: SiteSetting.discord_bot_token, prefix: '!'
 
+    admin_channel_id =  SiteSetting.discord_bot_admin_channel_id
     @@DiscordBot.ready do |event|
       puts "Logged in as #{@@DiscordBot.profile.username} (ID:#{@@DiscordBot.profile.id}) | #{@@DiscordBot.servers.size} servers"
-      @@DiscordBot.send_message(SiteSetting.discord_bot_admin_channel_id, "The Discourse admin bot has started his shift!")
+      @@DiscordBot.send_message(admin_channel_id, "The Discourse admin bot has started his shift!")
     end
 
     @@DiscordBot

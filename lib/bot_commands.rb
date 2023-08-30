@@ -46,7 +46,7 @@ module ::DiscordBot::BotCommands
           end
         end
 
-        # if beginning of thread, strip the last (first) message and replace it with it's parent message that kicked off the thread (ugh!)
+        # if beginning of thread, strip the first message and replace it with its parent message that kicked off the thread (ugh!)
         if past_messages.last.content.blank? && THREAD_TYPES.include?(event.channel.type)
           past_messages = past_messages[0..past_messages.length-2] << event.bot.channel(event.channel.parent_id).message(event.channel.id)
         end

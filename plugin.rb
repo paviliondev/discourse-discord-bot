@@ -40,16 +40,18 @@ after_initialize do
   end
 
   def start_thread(db)
-    bot_thread = Thread.new do
-      begin
-        RailsMultisite::ConnectionManagement.establish_connection(db: db)
-        ::DiscordBot::Bot.run_bot
-        STDERR.puts '---------------------------------------------------'
-        STDERR.puts 'Bot should now be spawned, say "Ping!" on Discord!'
-        STDERR.puts '---------------------------------------------------'
-        STDERR.puts '(-------      If not check logs          ---------)'
-      rescue Exception => ex
-        Rails.logger.error("Discord Bot: There was a problem: #{ex}")
+    if Discourse.running_in_rack?
+      bot_thread = Thread.new do
+        begin
+          RailsMultisite::ConnectionManagement.establish_connection(db: db)
+          ::DiscordBot::Bot.run_bot
+          STDERR.puts '---------------------------------------------------'
+          STDERR.puts 'Bot should now be spawned, say "Ping!" on Discord!'
+          STDERR.puts '---------------------------------------------------'
+          STDERR.puts '(-------      If not check logs          ---------)'
+        rescue Exception => ex
+          Rails.logger.error("Discord Bot: There was a problem: #{ex}")
+        end
       end
     end
   end

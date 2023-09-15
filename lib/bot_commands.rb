@@ -92,7 +92,7 @@ module ::DiscordBot::BotCommands
                   raw = raw.gsub(instance, "@" + mentioned_user.username)
                 else
                   discord_username = event.bot.user(instance[2..19]).username
-                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username))
+                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username))
                 end
               end
             end

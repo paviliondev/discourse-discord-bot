@@ -107,7 +107,7 @@ module ::DiscordBot::BotCommands
             if topic_index == 0 && destination_topic.nil?
               raw = raw.blank? ?  I18n.t("discord_bot.commands.disccopy.discourse_topic_contents", channel: event.channel.name) : raw
               link_to_discord = pm.link
-              raw = raw + I18n.t("discord_bot.commands.disccopy.link_to_discord", link_to_discord)
+              raw = raw + I18n.t("discord_bot.commands.disccopy.link_to_discord", link_to_discord: link_to_discord)
               new_post = PostCreator.create!(posting_user, title: I18n.t("discord_bot.commands.disccopy.discourse_topic_title", channel: event.channel.name) + (past_messages.count <= SiteSetting.discord_bot_message_copy_topic_size_limit ? "" : " #{index + 1}") , raw: raw, category: destination_category.id, skip_validations: true)
               total_copied_messages += 1
               current_topic_id = new_post.topic.id

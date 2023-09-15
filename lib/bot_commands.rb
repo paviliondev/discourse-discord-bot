@@ -77,9 +77,9 @@ module ::DiscordBot::BotCommands
         system_user = User.find_by(username: SiteSetting.discord_bot_unknown_user_proxy_account) || User.find_by(id: -1)
 
         total_copied_messages = 0
+        current_topic_id = nil
 
         past_messages.reverse.in_groups_of(SiteSetting.discord_bot_message_copy_topic_size_limit.to_i).each_with_index do |message_batch, index|
-          current_topic_id = nil
           message_batch.each_with_index do |pm, topic_index|
             next if pm.nil?
             raw = pm.to_s

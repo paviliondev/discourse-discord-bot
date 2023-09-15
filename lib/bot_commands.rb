@@ -123,6 +123,8 @@ module ::DiscordBot::BotCommands
           end
         end
         event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages)
+        url = "#{Discourse.current_hostname}/t/slug/#{current_topic_id}"
+        event.respond I18n.t("discord_bot.commands.disccopy.success.link", url: url)
       end
     end
 

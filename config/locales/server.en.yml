@@ -29,9 +29,10 @@ en:
         link_to_discord: "\n\n(This Topic relates to the [conversation starting here](%{link_to_discord}))"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category or will use Default Category."
         success:
-          found_matching_discourse_category: "SUCCESS: Found matching Discourse Category: \"%{name}\""
-          found_matching_discourse_topic: "SUCCESS: Found matching Discourse Topic"
-          final_outcome: "SUCCESS: Copied over %{count} past messages to Discourse!"
+          found_matching_discourse_category: "Success: Found matching Discourse Category: \"%{name}\""
+          found_matching_discourse_topic: "Sucess: Found matching Discourse Topic"
+          final_outcome: "Success: Copied over %{count} past messages to Discourse!"
+          link: "Success: the Topic can be found at %{url}"
         error:
           must_specify_message_number: "ERROR: Outside of a Thread you must specify number of messages to be copied!"
           must_specify_message_number_as_integer: "ERROR: Number of messages must be an integer!"

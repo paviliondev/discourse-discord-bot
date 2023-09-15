@@ -84,6 +84,19 @@ module ::DiscordBot::BotCommands
             next if pm.nil?
             raw = pm.to_s
 
+            if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
+              %w{raw}.grep /\B@\d+/ do |instance|
+                associated_user = UserAssociatedAccount.find_by(provider_uid: instance[1..])
+                unless associated_user.nil?
+                  mentioned_user = User.find_by(id: associated_user.user_id)
+                  raw = str.gsub(instance, "@" + mentioned_user.username)
+                else
+                  discord_username = event.bot.user(instance[1..]).username
+                  raw = str.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username))
+                end
+              end
+            end
+
             associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id)
             unless associated_user.nil?
               posting_user = User.find_by(id: associated_user.user_id)

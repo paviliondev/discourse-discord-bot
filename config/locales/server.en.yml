@@ -26,6 +26,7 @@ en:
         discourse_topic_title: "#%{channel} messages from Discord"
         discourse_topic_contents: "%{channel}"
         mention_prefix: "discord_%{discord_username}"
+        link_to_discord: "\n\n(This Topic relates to the [conversation starting here](%{link_to_discord}))"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category or will use Default Category."
         success:
           found_matching_discourse_category: "SUCCESS: Found matching Discourse Category: \"%{name}\""

@@ -89,10 +89,10 @@ module ::DiscordBot::BotCommands
                 associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19])
                 unless associated_user.nil?
                   mentioned_user = User.find_by(id: associated_user.user_id)
-                  raw = raw.gsub(instance, "@" + mentioned_user.username)
+                  raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
                 else
                   discord_username = event.bot.user(instance[2..19]).username
-                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username))
+                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..])
                 end
               end
             end

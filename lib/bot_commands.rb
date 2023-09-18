@@ -106,7 +106,13 @@ module ::DiscordBot::BotCommands
 
             if topic_index == 0 && destination_topic.nil?
               raw = raw.blank? ?  I18n.t("discord_bot.commands.disccopy.discourse_topic_contents", channel: event.channel.name) : raw
-              link_to_discord = pm.link
+              # because of structure of Discord if we are copying thread we want the link on second message, ugh!
+              if THREAD_TYPES.include?(event.channel.type) && message_batch.length > 1
+                link_to_discord = message_batch[1].link
+              else
+                link_to_discord = pm.link
+              end
+
               raw = raw + I18n.t("discord_bot.commands.disccopy.link_to_discord", link_to_discord: link_to_discord)
               new_post = PostCreator.create!(posting_user, title: I18n.t("discord_bot.commands.disccopy.discourse_topic_title", channel: event.channel.name) + (past_messages.count <= SiteSetting.discord_bot_message_copy_topic_size_limit ? "" : " #{index + 1}") , raw: raw, category: destination_category.id, skip_validations: true)
               total_copied_messages += 1

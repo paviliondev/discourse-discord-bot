@@ -77,12 +77,25 @@ module ::DiscordBot::BotCommands
         system_user = User.find_by(username: SiteSetting.discord_bot_unknown_user_proxy_account) || User.find_by(id: -1)
 
         total_copied_messages = 0
+        current_topic_id = nil
 
         past_messages.reverse.in_groups_of(SiteSetting.discord_bot_message_copy_topic_size_limit.to_i).each_with_index do |message_batch, index|
-          current_topic_id = nil
           message_batch.each_with_index do |pm, topic_index|
             next if pm.nil?
             raw = pm.to_s
+
+            if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
+              raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|
+                associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19])
+                unless associated_user.nil?
+                  mentioned_user = User.find_by(id: associated_user.user_id)
+                  raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
+                else
+                  discord_username = event.bot.user(instance[2..19]).username
+                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..])
+                end
+              end
+            end
 
             associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id)
             unless associated_user.nil?
@@ -93,6 +106,14 @@ module ::DiscordBot::BotCommands
 
             if topic_index == 0 && destination_topic.nil?
               raw = raw.blank? ?  I18n.t("discord_bot.commands.disccopy.discourse_topic_contents", channel: event.channel.name) : raw
+              # because of structure of Discord if we are copying thread we want the link on second message, ugh!
+              if THREAD_TYPES.include?(event.channel.type) && message_batch.length > 1
+                link_to_discord = message_batch[1].link
+              else
+                link_to_discord = pm.link
+              end
+
+              raw = raw + I18n.t("discord_bot.commands.disccopy.link_to_discord", link_to_discord: link_to_discord)
               new_post = PostCreator.create!(posting_user, title: I18n.t("discord_bot.commands.disccopy.discourse_topic_title", channel: event.channel.name) + (past_messages.count <= SiteSetting.discord_bot_message_copy_topic_size_limit ? "" : " #{index + 1}") , raw: raw, category: destination_category.id, skip_validations: true)
               total_copied_messages += 1
               current_topic_id = new_post.topic.id
@@ -108,6 +129,8 @@ module ::DiscordBot::BotCommands
           end
         end
         event.respond I18n.t("discord_bot.commands.disccopy.success.final_outcome", count: total_copied_messages)
+        url = "https://#{Discourse.current_hostname}/t/slug/#{current_topic_id.to_s}"
+        event.respond I18n.t("discord_bot.commands.disccopy.success.link", url: url)
       end
     end
 

@@ -78,7 +78,7 @@ module ::DiscordBot::BotCommands
 
         total_copied_messages = 0
         current_topic_id = nil
-        bot_user_id = Base64.decode64(bot.token.split(" ")[1].split(".")[0])
+        bot_user_id = Base64.decode64(bot.token.split(" ")[1].split(".")[0]).to_i
 
         past_messages.reverse.in_groups_of(SiteSetting.discord_bot_message_copy_topic_size_limit.to_i).each_with_index do |message_batch, index|
           message_batch.each_with_index do |pm, topic_index|

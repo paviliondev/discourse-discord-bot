@@ -98,7 +98,11 @@ module ::DiscordBot::BotCommands
             end
 
             pm.attachments.each do |attachment|
-              raw = raw + "\n\n" + attachment.url
+              if attachment.content_type.include?("image")
+                raw = raw + "\n\n" + attachment.url
+              else
+                raw = raw + "\n\n<a href='#{attachment.url}'>#{attachment.filename}</a>"
+              end
             end
 
             associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id)

@@ -97,6 +97,10 @@ module ::DiscordBot::BotCommands
               end
             end
 
+            pm.attachments.each do |attachment|
+              raw = raw + "\n\n" + attachment.proxy_url
+            end
+
             associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id)
             unless associated_user.nil?
               posting_user = User.find_by(id: associated_user.user_id)

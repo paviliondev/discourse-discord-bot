@@ -38,6 +38,9 @@ plugins:
   discord_bot_message_copy_convert_discord_mentions_to_usernames:
     client: false
     default: true
+  discord_bot_message_copy_ignore_bot_messages:
+    client: false
+    default: true
   discord_bot_unknown_user_proxy_account:
     client: false
     type: username

@@ -89,12 +89,12 @@ module ::DiscordBot::BotCommands
             if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
               raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|
                 associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19], provider_name: 'discord')
-                unless associated_user.nil?
-                  mentioned_user = User.find_by(id: associated_user.user_id)
-                  raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
-                else
+                if associated_user.nil?
                   discord_username = event.bot.user(instance[2..19]).username
                   raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..])
+                else
+                  mentioned_user = User.find_by(id: associated_user.user_id)
+                  raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
                 end
               end
             end
@@ -108,10 +108,10 @@ module ::DiscordBot::BotCommands
             end
 
             associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id, provider_name: 'discord')
-            unless associated_user.nil?
-              posting_user = User.find_by(id: associated_user.user_id)
-            else
+            if associated_user.nil?
               posting_user = system_user
+            else
+              posting_user = User.find_by(id: associated_user.user_id)
             end
 
             if topic_index == 0 && destination_topic.nil?
@@ -231,7 +231,9 @@ module ::DiscordBot::BotCommands
 
         event.respond "Discourse Sync: #{eligiblegroupbuilder.query.count} eligible group(s) were found"
 
-        unless eligiblegroupbuilder.query.count == 0
+        if eligiblegroupbuilder.query.count == 0
+          event.respond "Discourse Sync:  No eligible groups for sync using provided or default criteria!"
+        else
 
           eligiblegroupbuilder.query.each do |g|
             eligible_discourse_groups << g.id
@@ -270,7 +272,9 @@ module ::DiscordBot::BotCommands
 
           event.respond "Discourse Sync: #{discourse_groups.length} eligible group(s) were found with Discord users"
 
-          unless discourse_groups.length == 0
+          if discourse_groups.length == 0
+            event.respond "Discourse Sync:  No users were found in elibigle groups for sync using provided or default criteria!"
+          else
 
             event.respond "Discourse Sync:  Retrieving list of roles from Discord server ..."
 
@@ -380,11 +384,7 @@ module ::DiscordBot::BotCommands
             end
 
             event.respond "Discourse Sync:  DONE!"
-          else
-            event.respond "Discourse Sync:  No users were found in elibigle groups for sync using provided or default criteria!"
           end
-        else
-          event.respond "Discourse Sync:  No eligible groups for sync using provided or default criteria!"
         end
       end
     end

@@ -13,10 +13,10 @@ module ::DiscordBot::DiscordEventsHandlers
         system_user = User.find_by(id: -1)
 
         associated_user = UserAssociatedAccount.find_by(provider_uid: event.message.author.id, provider_name: 'discord')
-        unless associated_user.nil?
-          posting_user = User.find_by(id: associated_user.user_id)
-        else
+        if associated_user.nil?
           posting_user = system_user
+        else
+          posting_user = User.find_by(id: associated_user.user_id)
         end
 
         raw = event.message.to_s

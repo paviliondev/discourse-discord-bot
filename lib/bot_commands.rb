@@ -88,7 +88,7 @@ module ::DiscordBot::BotCommands
 
             if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
               raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|
-                associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19], provider_name: 'discord'))
+                associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19], provider_name: 'discord')
                 unless associated_user.nil?
                   mentioned_user = User.find_by(id: associated_user.user_id)
                   raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])

@@ -91,7 +91,7 @@ module ::DiscordBot::BotCommands
                 associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19], provider_name: 'discord')
                 if associated_user.nil?
                   discord_username = event.bot.user(instance[2..19]).username
-                  raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..])
+                  raw = raw.gsub(instance, "discord_%{discord_username}", discord_username: discord_username + instance[21..])
                 else
                   mentioned_user = User.find_by(id: associated_user.user_id)
                   raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
@@ -115,7 +115,7 @@ module ::DiscordBot::BotCommands
             end
 
             if topic_index == 0 && destination_topic.nil?
-              raw = raw.blank? ?  I18n.t("discord_bot.commands.disccopy.discourse_topic_contents", channel: event.channel.name) : raw
+              raw = raw.blank? ?  "%{channel}", channel: event.channel.name : raw
               # because of structure of Discord if we are copying thread we want the link on second message, ugh!
               if THREAD_TYPES.include?(event.channel.type) && message_batch.length > 1
                 link_to_discord = message_batch[1].link

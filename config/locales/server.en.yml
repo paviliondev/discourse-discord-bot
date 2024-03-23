@@ -25,15 +25,13 @@ en:
       disccopy:
         description: "Copy across message history to Category of same name"
         discourse_topic_title: "#%{channel} messages from Discord"
-        discourse_topic_contents: "%{channel}"
-        mention_prefix: "discord_%{discord_username}"
         link_to_discord: "\n\n(This Topic relates to the [Discord conversation here](%{link_to_discord}))"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category or will use Default Category."
         success:
           found_matching_discourse_category: "Success: Found matching Discourse Category: \"%{name}\""
-          found_matching_discourse_topic: "Sucess: Found matching Discourse Topic"
+          found_matching_discourse_topic: "Success: Found matching Discourse Topic"
           final_outcome: "Success: Copied over %{count} past messages to Discourse!"
-          link: "Success: the Discourse Topic can be found at %{url}"
+          link: "Success: The Discourse Topic can be found at %{url}"
         error:
           must_specify_message_number: "ERROR: Outside of a Thread you must specify number of messages to be copied!"
           must_specify_message_number_as_integer: "ERROR: Number of messages must be an integer!"

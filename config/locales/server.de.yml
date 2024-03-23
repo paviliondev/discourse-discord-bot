@@ -1,7 +1,78 @@
-de:
+en:
   site_settings:
-    discord_bot_enabled: "Aktiviere das Discourse Discord Bot Plugin"
-    discord_bot_token: "Gebe hier den Discord Bot TOKEN ein"
-    discord_bot_admin_channel_id: "Die ID des Admin Text Channels auf Discord"
-    discord_bot_admin_role_id: "Die ID der Admin Rolle auf dem Discord, wessen Befehle erlaubt sind"
-    discord_bot_rate_limit_delay: "Die Verzögerung in Sekunden, in der Befehle an Discord geschickt werden, um die Rate Limits einzuhalten"
+    discord_bot_enabled: Discourse Discord Bot Plugin aktivieren
+    discord_bot_token: Gebe hier den Discord Bot TOKEN ein
+    discord_bot_admin_channel_id: Die ID des Admin Text Channels auf Discord
+    discord_bot_admin_role_id: 'Die ID deiner Admin-Rolle auf Discord, für die Befehle erlaubt sind'
+    discord_bot_announcement_channel_id: Die ID deines Discord-Ankündigungskanals
+    discord_bot_discourse_announcement_topic_id: >-
+      Die ID deines Discourse-Ankündigungsthemas (wenn die automatische
+      Synchronisierung des Discord-Kanals aktiviert ist und eine passende
+      Kategorie gefunden wurde, wird dies unterdrückt)
+    discord_bot_auto_channel_sync: >-
+      Chat-Synchronisation auf gleichnamigen Kanälen/Kategorien aktivieren (hat
+      Vorrang vor Discourse Announcement Topic)
+    discord_bot_message_copy_topic_size_limit: >-
+      Kopie des Nachrichtenverlaufs: Anzahl der Discord-Nachrichten pro
+      Diskursthema
+    discord_bot_message_copy_default_category: >-
+      Wenn keine Kategorie angegeben wurde und der Name des Kanals nicht mit
+      einer Discourse-Kategorie übereinstimmt, wird diese Kategorie zum Einfügen
+      von Themen verwendet
+    discord_bot_message_copy_convert_discord_mentions_to_usernames: >-
+      Erwähnungen in Discord-Nachrichten in Discourse- oder Discord-Nutzernamen
+      umwandeln
+    discord_bot_message_copy_ignore_bot_messages: Ignoriere Nachrichten von Bot und kopiere nicht rüber
+    discord_bot_post_announcement_categories: Neue Posts hier im Ankündigungskanal ankündigen
+    discord_bot_topic_announcement_categories: Kündige neue Themen hier im Ankündigungskanal an
+    discord_bot_rate_limit_delay: >-
+      Die Verzögerung in Sekunden, in der Befehle an Discord geschickt werden,
+      um die Rate Limits einzuhalten
+    discord_bot_unknown_user_proxy_account: >-
+      Benutzername des Accounts, der zum Posten verwendet werden soll, wenn der
+      Discord-Benutzer der Discourse-Instanz unbekannt ist
+  discord_bot:
+    discord_events:
+      auto_message_copy:
+        default_topic_title: 'Discord #%{channel_name} Nachrichten'
+    commands:
+      rate_limit_breached: 'Warte, Kuh(Mädchen/Junge/Person), Ratengrenze erreicht!'
+      no_matching_category: Keine passende Kategorie in Discourse!
+      disccopy:
+        description: Kopiere den gesamten Nachrichtenverlauf in die gleichnamige Kategorie
+        discourse_topic_title: '#%{channel} Nachrichten von Discord'
+        link_to_discord: >-
+          (Dieses Thema bezieht sich auf die [Discord-Unterhaltung
+          hier](%{link_to_discord}))
+        no_category_specified: >-
+          Es wurde keine Zielkategorie angegeben, also wird versucht, den
+          aktuellen Kanalnamen zu verwenden, um eine Discourse-Kategorie zu
+          finden, oder es wird die Standardkategorie verwendet.
+        success:
+          found_matching_discourse_category: 'Erfolg: Passende Discourse Kategorie gefunden: "%{name}"'
+          found_matching_discourse_topic: 'Erfolg: Passendes Discourse-Thema gefunden'
+          final_outcome: >-
+            Erfolg: Über %{count} der vergangenen Nachrichten in Discourse
+            kopiert!
+          link: 'Erfolg: Das Thema des Discourse findest du unter %{url}'
+        error:
+          must_specify_message_number: >-
+            FEHLER: Außerhalb eines Threads musst du die Anzahl der zu
+            kopierenden Nachrichten angeben!
+          must_specify_message_number_as_integer: 'FEHLER: Die Anzahl der Nachrichten muss eine ganze Zahl sein!'
+          unable_to_find_discourse_category: >-
+            FEHLER: Keine passende Discourse-Kategorie gefunden, Abbruch des
+            Befehls!  Achte darauf, Leerzeichen im Namen durch _ zu ersetzen und
+            die Groß- und Kleinschreibung anzupassen.
+          unable_to_find_discourse_topic: >-
+            FEHLER: Kein passendes Diskursthema in der Zielkategorie gefunden,
+            wird neu erstellt!
+          unable_to_determine_topic_id: >-
+            FEHLER: Es kann keine passende Themen Id für Discourse ermittelt
+            werden!
+      disccopythread:
+        description: Kopiere diesen Thread in ein neues Thema auf Discourse
+      disckick:
+        description: >-
+          Benutzer blockieren, deren Vertrauenslevel unter einer bestimmten Zahl
+          liegt

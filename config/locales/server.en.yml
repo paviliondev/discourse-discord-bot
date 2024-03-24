@@ -25,6 +25,8 @@ en:
       disccopy:
         description: "Copy across message history to Category of same name"
         discourse_topic_title: "#%{channel} messages from Discord"
+        discourse_topic_contents: "%{channel}"
+        mention_prefix: "discord_%{discord_username}"
         link_to_discord: "\n\n(This Topic relates to the [Discord conversation here](%{link_to_discord}))"
         no_category_specified: "No target Category specified, so attempting to use current channel name to match a Discourse Category or will use Default Category."
         success:

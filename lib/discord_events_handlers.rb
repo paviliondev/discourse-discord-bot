@@ -6,9 +6,8 @@ module ::DiscordBot::DiscordEventsHandlers
     message do |event|
 
       RailsMultisite::ConnectionManagement.each_connection do
-        next if event.message.channel.id.to_s != SiteSetting.discord_bot_announcement_channel_id
-
-        next if !SiteSetting.discord_bot_auto_channel_sync && SiteSetting.discord_bot_discourse_announcement_topic_id.blank
+        next if !SiteSetting.discord_bot_auto_channel_sync && SiteSetting.discord_bot_discourse_announcement_topic_id.blank &&
+          (event.message.channel.id.to_s != SiteSetting.discord_bot_announcement_channel_id)
 
         system_user = User.find_by(id: -1)
 

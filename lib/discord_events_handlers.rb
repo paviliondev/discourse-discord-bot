@@ -21,7 +21,7 @@ module ::DiscordBot::DiscordEventsHandlers
         raw = event.message.to_s
         embed_url = event.message.embeds[0].url
         if !raw.blank? || !embed_url.blank?
-          content = raw.blank? embed_url : raw
+          content = raw.blank? ? embed_url : raw
           if SiteSetting.discord_bot_auto_channel_sync
             matching_category = Category.find_by(name: event.message.channel.name)
             unless matching_category.nil?

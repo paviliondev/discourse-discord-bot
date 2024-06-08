@@ -26,7 +26,7 @@ module ::DiscordBot::DiscordEventsHandlers
           title = embed.title
         end
         if !raw.blank? || !embed.nil?
-          content = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: embed_url, description: description, title: title) : raw
+          content = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title) : raw
           if SiteSetting.discord_bot_auto_channel_sync
             matching_category = Category.find_by(name: event.message.channel.name)
             unless matching_category.nil?

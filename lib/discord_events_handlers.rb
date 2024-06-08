@@ -11,9 +11,12 @@ module ::DiscordBot::DiscordEventsHandlers
 
         system_user = User.find_by(id: -1)
 
+        proxy_account = User.find_by(name: SiteSetting.discord_bot_unknown_user_proxy_account)
+
         associated_user = UserAssociatedAccount.find_by(provider_uid: event.message.author.id, provider_name: 'discord')
+
         if associated_user.nil?
-          posting_user = system_user
+          posting_user = proxy_account.nil? ? system_user : proxy_account
         else
           posting_user = User.find_by(id: associated_user.user_id)
         end

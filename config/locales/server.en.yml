@@ -19,7 +19,7 @@ en:
     discord_events:
       auto_message_copy:
         default_topic_title: "Discord #%{channel_name} messages"
-        embed: "[%{title}](%{url})\n\n%{description}"
+        embed: "[%{title}](%{url})\n\n%{description}\n\n%{thumbnail_url}"
     commands:
       rate_limit_breached: "Hold on cow(girl/boy/person), rate limit hit!"
       no_matching_category: "No matching Category in Discourse!"

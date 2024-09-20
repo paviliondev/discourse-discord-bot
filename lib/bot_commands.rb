@@ -89,11 +89,12 @@ module ::DiscordBot::BotCommands
 
             if !embed.blank?
               url = embed.url
+              thumbnail_url = embed.thumbnail.url
               description = embed.description
               title = embed.title
             end
 
-            raw = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title) : raw
+            raw = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title, thumbnail_url: thumbnail_url) : raw
 
             if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
               raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|
@@ -110,9 +111,9 @@ module ::DiscordBot::BotCommands
 
             pm.attachments.each do |attachment|
               if attachment.content_type.include?("image")
-                raw = raw + "\n\n" + attachment.url
+                raw = !raw.blank? ? raw + "\n\n" + attachment.url : attachment.url
               else
-                raw = raw + "\n\n<a href='#{attachment.url}'>#{attachment.filename}</a>"
+                raw = !raw.blank? ? raw + "\n\n<a href='#{attachment.url}'>#{attachment.filename}</a>" : "<a href='#{attachment.url}'>#{attachment.filename}</a>"
               end
             end
 

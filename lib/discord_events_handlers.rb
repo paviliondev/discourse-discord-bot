@@ -25,11 +25,21 @@ module ::DiscordBot::DiscordEventsHandlers
         embed = event.message.embeds[0]
         if !embed.blank?
           url = embed.url
+          thumbnail_url = embed.thumbnail.url
           description = embed.description
           title = embed.title
         end
+
+        event.message.attachments.each do |attachment|
+          if attachment.content_type.include?("image")
+            raw = !raw.blank? ? raw + "\n\n" + attachment.url : attachment.url
+          else
+            raw = !raw.blank? ? raw + "\n\n<a href='#{attachment.url}'>#{attachment.filename}</a>" : "<a href='#{attachment.url}'>#{attachment.filename}</a>"
+          end
+        end
+
         if !raw.blank? || !embed.nil?
-          content = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title) : raw
+          content = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title, thumbnail_url: thumbnail_url) : raw
           if SiteSetting.discord_bot_auto_channel_sync
             matching_category = Category.find_by(name: event.message.channel.name)
             unless matching_category.nil?

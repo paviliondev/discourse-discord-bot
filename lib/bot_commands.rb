@@ -89,7 +89,7 @@ module ::DiscordBot::BotCommands
 
             if !embed.blank?
               url = embed.url
-              thumbnail_url = embed.thumbnail.url
+              thumbnail_url = embed.thumbnail&.url || embed.image&.url || embed.video&.url || ""
               description = embed.description
               title = embed.title
             end

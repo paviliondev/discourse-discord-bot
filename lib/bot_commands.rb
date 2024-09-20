@@ -152,6 +152,9 @@ module ::DiscordBot::BotCommands
         url = "https://#{Discourse.current_hostname}/t/slug/#{current_topic_id.to_s}"
         event.respond I18n.t("discord_bot.commands.disccopy.success.link", url: url)
       end
+    rescue  => e
+      event.respond I18n.t("discord_bot.commands.disccopy.error.general_error", error: e)
+      Rails.logger.error("Discord Bot: There was a problem: #{e}")
     end
 
     # '!disckick' - a command to kick members beneath a certain trust level on Discourse

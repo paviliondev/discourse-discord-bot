@@ -36,6 +36,7 @@ en:
           final_outcome: "Success: Copied over %{count} past messages to Discourse!"
           link: "Success: The Discourse Topic can be found at %{url}"
         error:
+          general_error: "ERROR: occurred, aborting command!: %{error}"
           must_specify_message_number: "ERROR: Outside of a Thread you must specify number of messages to be copied!"
           must_specify_message_number_as_integer: "ERROR: Number of messages must be an integer!"
           unable_to_find_discourse_category: "ERROR: Unable to find matching Discourse Category, aborting command!  Be sure to substitute _ for spaces in name and match case."

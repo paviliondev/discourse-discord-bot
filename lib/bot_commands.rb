@@ -85,6 +85,15 @@ module ::DiscordBot::BotCommands
             next if pm.nil?
             next if SiteSetting.discord_bot_message_copy_ignore_bot_messages && pm.author.id == bot_user_id
             raw = pm.to_s
+            embed = pm.embeds[0]
+
+            if !embed.blank?
+              url = embed.url
+              description = embed.description
+              title = embed.title
+            end
+
+            raw = raw.blank? ? I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title) : raw
 
             if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
               raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|

@@ -1,4 +1,7 @@
 module ::DiscordBot::Utils
+
+  module_function
+
   def prepare_post(pm)
 
     raw = pm.to_s

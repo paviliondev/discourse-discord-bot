@@ -1,4 +1,5 @@
 module ::DiscordBot::Utils
+  include ActionView::Helpers::DateHelper
 
   module_function
 
@@ -65,13 +66,16 @@ module ::DiscordBot::Utils
 
       # Check if it's a relative time ('R') format
       if format_type == 'R'
-        # Use Rails' `time_ago_in_words` or `distance_of_time_in_words` for relative time
-        relative_time = time.to_s(:relative) # Will output time difference as a string, e.g., "3 hours ago"
-        relative_time
+        # Get the relative time and check if it's in the future or past
+        relative_time = time_ago_in_words(time)
+        if time > Time.now
+          "in #{relative_time}"
+        else
+          "#{relative_time} ago"
+        end
       else
         # Convert the timestamp to Time and format it according to the specified format type
-        readable_time = time.strftime(format_map[format_type])
-        readable_time
+        time.strftime(format_map[format_type])
       end
     end
   end

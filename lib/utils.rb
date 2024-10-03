@@ -73,18 +73,19 @@ module ::DiscordBot::Utils
     end
   end
 
-  def convert_mentions(raw)
-    raw.split(" ").grep /\B[<]@\d+[>]/ do |instance|
-      associated_user = UserAssociatedAccount.find_by(provider_uid: instance[2..19], provider_name: 'discord')
+  def convert_mentions(text)
+    text.gsub(/\B[<]@\d+[>]/) do |instance|
+      provider_uid = instance[2..19]
+      associated_user = UserAssociatedAccount.find_by(provider_uid: provider_uid, provider_name: 'discord')
+  
       if associated_user.nil?
-        discord_username = event.bot.user(instance[2..19]).username
-        raw = raw.gsub(instance, I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..])
+        discord_username = event.bot.user(provider_uid).username
+        I18n.t("discord_bot.commands.disccopy.mention_prefix", discord_username: discord_username) + instance[21..]
       else
         mentioned_user = User.find_by(id: associated_user.user_id)
-        raw = raw.gsub(instance, "@" + mentioned_user.username + instance[21..])
+        "@" + mentioned_user.username + instance[21..]
       end
     end
-    raw
   end
 
   def format_youtube_links(text)

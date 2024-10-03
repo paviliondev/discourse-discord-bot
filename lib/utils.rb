@@ -31,6 +31,8 @@ module ::DiscordBot::Utils
 
     # associated author
     associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id, provider_name: 'discord')
+    proxy_account = User.find_by(name: SiteSetting.discord_bot_unknown_user_proxy_account)
+
     if associated_user.nil?
       posting_user = proxy_account.nil? ? system_user : proxy_account
     else
@@ -86,9 +88,6 @@ module ::DiscordBot::Utils
   end
 
   def format_youtube_links(text)
-    # Regular expression to match YouTube URLs
-    # youtube_url_pattern = /\A(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|v\/|embed\/|e\/|attribution_link\?.*watch%3Fv=)|youtu\.be\/)([a-zA-Z0-9\-_]{11})/
-  
     # Regular expression to match YouTube URLs
     youtube_regex = %r{(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/[^\s]+)}
 

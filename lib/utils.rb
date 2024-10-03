@@ -91,12 +91,8 @@ module ::DiscordBot::Utils
   def format_youtube_links(text)
     # Regular expression to match YouTube URLs
     youtube_regex = %r{(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/[^\s]+)}
-
-    # Use gsub to find and format YouTube links with two new lines before and after
-    formatted_text = text.gsub(youtube_regex) do |match|
-      "\n\n#{match}\n\n"
-    end
   
-    formatted_text
+    # Use gsub to find and format YouTube links with two new lines before and after
+    text.gsub(youtube_regex) { |match| "\n\n#{match}\n\n" }
   end
 end

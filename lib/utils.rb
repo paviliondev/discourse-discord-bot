@@ -4,7 +4,7 @@ module ::DiscordBot::Utils
     raw = pm.to_s
     embed = pm.embeds[0]
 
-    #embed
+    # embed
     if !embed.blank?
       url = embed.url
       thumbnail_url = embed.thumbnail&.url || embed.image&.url || embed.video&.url || ""
@@ -20,7 +20,7 @@ module ::DiscordBot::Utils
       end
     end
 
-    #attachments
+    # attachments
     pm.attachments.each do |attachment|
       if attachment.content_type.include?("image")
         raw = !raw.blank? ? raw + "\n\n" + attachment.url : attachment.url
@@ -29,7 +29,7 @@ module ::DiscordBot::Utils
       end
     end
 
-    #associated author
+    # associated author
     associated_user = UserAssociatedAccount.find_by(provider_uid: pm.author.id, provider_name: 'discord')
     if associated_user.nil?
       posting_user = proxy_account.nil? ? system_user : proxy_account
@@ -87,7 +87,7 @@ module ::DiscordBot::Utils
 
   def format_youtube_links(text)
     # Regular expression to match YouTube URLs
-    #youtube_url_pattern = /\A(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|v\/|embed\/|e\/|attribution_link\?.*watch%3Fv=)|youtu\.be\/)([a-zA-Z0-9\-_]{11})/
+    # youtube_url_pattern = /\A(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?v=|v\/|embed\/|e\/|attribution_link\?.*watch%3Fv=)|youtu\.be\/)([a-zA-Z0-9\-_]{11})/
   
     # Regular expression to match YouTube URLs
     youtube_regex = %r{(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/[^\s]+)}

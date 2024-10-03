@@ -11,7 +11,7 @@ libdir = File.join(File.dirname(__FILE__), "vendor/discordrb/lib")
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
 gem 'event_emitter', '0.2.6'
-gem 'websocket', '1.2.9'
+gem 'websocket', '1.2.11'
 gem 'websocket-client-simple', '0.3.0'
 gem 'opus-ruby', '1.0.1', { require: false }
 gem 'netrc', '0.11.0'
@@ -32,6 +32,7 @@ after_initialize do
   %w[
     ../lib/engine.rb
     ../lib/bot.rb
+    ../lib/utils.rb
     ../lib/bot_commands.rb
     ../lib/discourse_events_handlers.rb
     ../lib/discord_events_handlers.rb

@@ -8,19 +8,19 @@ module ::DiscordBot::Utils
     embed = pm.embeds[0]
 
     # embed
-    if !embed.blank?
-      url = embed.url
-      thumbnail_url = embed.thumbnail&.url || embed.image&.url || embed.video&.url || ""
-      description = embed.description
-      title = embed.title
-      raw = I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title, thumbnail_url: thumbnail_url)
-    else
+    if !raw.blank?
       raw = convert_timestamps(raw)
       raw = format_youtube_links(raw)
       #mentions
       if SiteSetting.discord_bot_message_copy_convert_discord_mentions_to_usernames
         raw = convert_mentions(raw)
       end
+    elsif !embed.blank?
+      url = embed.url
+      thumbnail_url = embed.thumbnail&.url || embed.image&.url || embed.video&.url || ""
+      description = embed.description
+      title = embed.title
+      raw = I18n.t("discord_bot.discord_events.auto_message_copy.embed", url: url, description: description, title: title, thumbnail_url: thumbnail_url)
     end
 
     # attachments

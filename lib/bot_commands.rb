@@ -34,13 +34,13 @@ module ::DiscordBot::BotCommands
 
         number_of_past_messages = number_of_past_messages || HISTORY_CHUNK_LIMIT
         if number_of_past_messages.to_i <= HISTORY_CHUNK_LIMIT
-          past_messages << event.channel.history(number_of_past_messages.to_i, event.message.id)
+          past_messages = event.channel.history(number_of_past_messages.to_i, event.message.id)
         else
           number_of_messages_retrieved = 0
           last_id = event.message.id
           while number_of_messages_retrieved < number_of_past_messages.to_i
             retrieve_this_time = number_of_past_messages.to_i - number_of_messages_retrieved > HISTORY_CHUNK_LIMIT ? HISTORY_CHUNK_LIMIT : number_of_past_messages.to_i - number_of_messages_retrieved
-            past_messages << event.channel.history(retrieve_this_time, last_id)
+            past_messages = event.channel.history(retrieve_this_time, last_id)
             last_id = past_messages.last.id.to_i
             number_of_messages_retrieved += retrieve_this_time
           end

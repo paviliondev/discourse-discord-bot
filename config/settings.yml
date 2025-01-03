@@ -25,6 +25,9 @@ plugins:
     client: false
     default: ''
     type: category_list
+  discord_bot_topic_announcement_delay_seconds:
+    default: 120
+    client: false
   discord_bot_auto_channel_sync:
     default: false
     client: false

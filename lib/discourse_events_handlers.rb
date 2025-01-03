@@ -12,6 +12,7 @@ module ::DiscordBot::DiscourseEventsHandlers
           ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_announcement_channel_id, message)
         else
           if topic_listening_categories.include?(posted_category.to_s) && post.post_number = 1 then
+            sleep(SiteSetting.discord_bot_topic_announcement_delay_seconds)
             message = I18n.t("discord_bot.discourse_events.announce_new_topic", posted_category_name: posted_category_name, url: Discourse.base_url + post.url)
             ::DiscordBot::Bot.discord_bot.send_message(SiteSetting.discord_bot_announcement_channel_id, message)
           end

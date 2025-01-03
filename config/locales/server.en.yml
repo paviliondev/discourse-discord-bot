@@ -13,6 +13,7 @@ en:
     discord_bot_message_copy_ignore_bot_messages: "Ignore messages by bot and do not copy over"
     discord_bot_post_announcement_categories: "Announce new Posts in here within the announcements channel"
     discord_bot_topic_announcement_categories: "Announce new Topics in here within the announcements channel"
+    discord_bot_topic_announcement_delay_seconds: "Announce new Topics: the delay in seconds"
     discord_bot_rate_limit_delay: "The delay in seconds between sending commands to Discord so we don't annihilate rate limits"
     discord_bot_unknown_user_proxy_account: "Username of account to be used for posting if Discord User is unknown to Discourse instance"
   discord_bot:
